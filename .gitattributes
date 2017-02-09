@@ -1,3 +1,7 @@
 *.js linguist-vendored=false
 *.css linguist-vendored=false
 *.html linguist-vendored=false
+
+*.js linguist-language=python
+*.css linguist-language=python
+*.html linguist-language=python
