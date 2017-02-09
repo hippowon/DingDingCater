@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="DingDingCater Blog">
+    <meta name="Keywords" content="DingDingCater Blog">
+    <meta name="robots" content="all">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>DingDingCater Blog</title>
+
+    {# use Baidu CDN #}
+{#        <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>#}
+{#        <script src="http://apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>#}
+{#        <link rel="stylesheet" href="http://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css"/>#}
+{#        <link rel="stylesheet" href="http://apps.bdimg.com/libs/fontawesome/4.4.0/css/font-awesome.min.css"/>#}
+
+    {# use local static files #}
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/static/font-awesome-4.7.0/css/font-awesome.min.css"/>
+    <link href="/static/syntaxhighlighter_3.0.83/styles/shCoreDefault.css" rel="stylesheet" type="text/css" />
+
+    {% comment %}
+    several comfortable syntaxhighlighter themes:
+        Default	        shThemeDefault.css
+        Django	        shThemeDjango.css
+        Eclipse	        shThemeEclipse.css
+        RDark	        shThemeRDark.css
+    {% endcomment %}
+    <link type="text/css" rel="Stylesheet" href="/static/syntaxhighlighter_3.0.83/styles/shThemeDefault.css"/>
+
+    <script src="/static/syntaxhighlighter_3.0.83/scripts/shCore.js" type="text/javascript"></script>
+    <script src="/static/syntaxhighlighter_3.0.83/scripts/shBrushJScript.js" type="text/javascript"></script>
+    <script src="/static/syntaxhighlighter_3.0.83/scripts/shBrushPython.js" type="text/javascript"></script>
+    <script src="/static/syntaxhighlighter_3.0.83/scripts/shBrushScala.js" type="text/javascript"></script>
+    <script src="/static/syntaxhighlighter_3.0.83/scripts/shBrushJava.js" type="text/javascript"></script>
+    <script src="/static/syntaxhighlighter_3.0.83/scripts/shBrushCpp.js" type="text/javascript"></script>
+    <script src="/static/syntaxhighlighter_3.0.83/scripts/shBrushPowerShell.js" type="text/javascript"></script>
+    <script src="/static/syntaxhighlighter_3.0.83/scripts/shBrushSql.js" type="text/javascript"></script>
+    <script src="/static/syntaxhighlighter_3.0.83/scripts/shBrushXml.js" type="text/javascript"></script>
+
+    <style>
+        body{ padding-top:0px; width:1440px; margin-left:auto;  margin-right:auto; }
+        .container{ padding:0px; width:1440px; }
+        .divcenter{ float:none;  display:block; margin-left:auto; margin-right:auto; }
+        p{ margin:0 0 0px; }
+        div{ margin:0 0 0px; margin:0 0 0px; }
+        .previous,.previous-off,.next-off,.next{  font-size:30px;  } {#style of button in Paginator  #}
+
+        {# Navigation #}
+        .cls_topCategory a{text-decoration:none; font-family:"Times New Roman"; padding-left:10px;font-size:15px; overflow:hidden;}
+        /* keep cls_systembtn's width = cls_menu's width +  cls_menu's padding-left and padding-right  */
+        .cls_topCategory{ width:80px; height:35px; line-height:35px; z-index:1;  background-color:#6633CC; float:left;}
+        .topA{ width:100%; height:35px; display:block; font-size:15px; font-weight:bold; color:white; }
+        .topA:hover{ color:white; background-color:rgba(56, 40, 161, 0.74); background-position:left bottom; z-index:0;}
+        .topA span{ padding-left:6px; }
+
+        /****** Dropdown Menu ******/
+        .cls_menu{  width:180px; padding:0px 0px 0px 0px; margin-top:0px;
+            background-color:#6633cc; list-style-type:none; z-index:3; display:none; }
+        .cls_menu ul{width:100%; margin-top:0px;}
+        .cls_menu a{ width:100%; height:35px; display:block; color:white;}
+        .cls_menu a:hover{color:white; background-color:#3828a1; text-decoration:none;}
+        .cls_menu li{z-index:9; margin-top:0px; margin-bottom:0px;}
+        .cls_menu li a{margin-left:0px; text-indent:5px;}
+    </style>
+
+    <script type="text/javascript">
+        //enable SyntaxHighlighter
+        SyntaxHighlighter.defaults['toolbar'] = false;//close toolbar
+        SyntaxHighlighter.all();
+
+        //Initialize dropdown menu
+        $(document).ready(function()
+        {
+            //add slide animation for top category button
+            function addSlide (selector) {
+                $(selector).mouseenter(function(){$(this).find('ul').slideDown("fast");});
+                $(selector).mouseleave(function(){$(this).find('ul').slideUp("fast");});
+            };
+            addSlide(".cls_topCategory");
+
+
+            //add response for "praise" button
+            $("#praiseBtn").bind("click", function()
+            {
+                //submit data to server bu ajax
+                $.post("/uploadPraise/",{"aid":$("#adiv").attr("aid").toString()},function (response,status,xhr) {
+                    if (status == 'success')
+                    {
+                        $("#praiseCnt").html("<p><b>" + response.toString() + "</b></p>");
+                    }
+                });
+                //animation
+                var flashNum = $('<div>+1</div>');
+                var praise_Div = $("#praiseDiv");
+                praiseBtn = $("#praiseBtn");
+                $(this).append(flashNum);
+                leftLoc = $(this).position().left + 18;
+                topLoc = praise_Div.offset().top  - $("#id_article").offset().top;
+
+                flashNum.css({
+                    "position": "absolute",
+                    "left": (leftLoc - 5) + 'px' ,
+                    "top": topLoc+ 'px',
+                    "z-index": 9,
+                    "font-size": 30,
+                    "color":"blue"
+                });
+                $(this).css({"cursor":"default","color":"grey"});
+                $(this).unbind();
+                flashNum.animate({"font-size": 50,
+                    "opacity": "0.1",
+                    "font-size": 55,
+                    "left":(leftLoc -15).toString() + 'px',
+                    "top":(topLoc -120).toString() + 'px'
+                }, 600, function () {flashNum.remove();});
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        {# header #}
+        <div class="row navbar navbar-default divcenter col-md-12" style="margin-bottom:0px;border: none; border-radius:0px;height:120px;width:1440px; background:url('/static/header.jpg');" >
+            <h1 style="margin-top:0px"><img src="/static/img/flydragon.jpg" alt="图片" class="img-rounded" style="height:50px;">&nbsp;DingDingCater's Blog</h1>
+        </div>
+
+        {% block nav_bar %} {% include "navBar.html" %} {% endblock %}
+
+        <div style="height:1575px; position:relative; top:35px;">
+            {# left pannel #}
+            <div class="col-md-3 pull-left" style="background-color:rgba(157,157,157,0.17); z-index:0">
+                <div>
+                    <h3><b>Newest articles</b></h3>
+                     <ol>
+                        {% for article in article_list_recent %}
+                            <li><a href="{% url 'article' %}?id={{ article.id }}">{{ article.title }}&nbsp;（{{ article.datePublish | date:'Y-m-d' }}）</a></li>
+                        {% endfor %}
+                    </ol>
+                </div>
+                <div>
+                    <h3><b>top click</b></h3>
+                    <ol>
+                        {% for article in article_list_clickRank %}
+                            <li><a href="{% url 'article' %}?id={{ article.id }}">{{ article.title }}({{ article.clickCnt }})</a></li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            </div>
+
+            {# page content. will be replaced by article list template or article content template #}
+            <div class="col-md-9 pull-right " style="padding-top:0px;" >
+                {% block page_content %}{% endblock %}
+                {% block Paginator %}{% endblock %}
+            </div>
+        </div>
+
+        {# bottom #}
+        <div id="footer">
+            <div class="col-md-12" style="text-align:center; padding-left:0px; padding-right:0px; color:white; background-color:rgb(102,51,204)">
+                <hr style="margin-top:0px; margin-bottom:0px">
+                <h5 class="text-center" >Blog Powered By &nbsp;<img src="/static/img/flydragon.jpg" alt="图片" class="img-rounded" style="height:30px;">&nbsp;DingDingCater</h5>
+            </div>
+         </div>
+    </div>
+</body>
+</html>

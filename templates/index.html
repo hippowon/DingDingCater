@@ -1,0 +1,122 @@
+{# both index's article list and category's article list use this template. #}
+{# views.page_category() and views.page_index() pass different content for this template, #}
+{# and set flag 'bIsIndex' to distinguish there's Paginator at page bottom #}
+
+{% extends 'base.html' %}
+
+{# fill "page_content" block  #}
+{% block page_content %}
+    {#  topest articles  #}
+    {% if page_articles.number == 1 %}
+        <ul style="margin-top:0px;">
+            {% for article in article_list_topest %}
+                <div class="articleList" style="margin-bottom:10px;">
+                    <h3><a href="{% url 'article' %}?id={{ article.id }}" style="color: #1b2426;"><b><i class="fa fa-level-up" aria-hidden="true"></i>&nbsp;{{ article.title }}</b></a></h3>
+
+                    <p style="text-indent:2em;">{{ article.description | slice:':200' }}……</p>
+                    <p style="margin-top: 10px;">
+                        <span><i class="fa fa-pencil-square-o" aria-hidden="true" style="color:dodgerblue;"></i>&nbsp;{{ article.datePublish | date:'Y-m-d G:i:s' }}</span>&nbsp;&nbsp;&nbsp;
+                        <span><i class="fa fa-eye" aria-hidden="true" style="color:dodgerblue;"></i>（{{ article.clickCnt }}）</span>&nbsp;&nbsp;<span><i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:dodgerblue;"></i>（{{ article.praiseCnt }}）</span>
+                    </p>
+                    <hr>
+                </div>
+            {% endfor %}
+        </ul>
+     {% endif %}
+
+    {#  nontopest articles  #}
+    <ul style="margin-top:0px;">
+        {% for article in  article_list_show %}
+            <div class="articleList" style="margin-bottom:10px;">
+                <h3><a href="{% url 'article' %}?id={{ article.id }}" style="color: #1b2426"><b>{{ article.title }}</b></a></h3>
+                <p style="text-indent:2em">{{ article.description | slice:':200' }}……</p>
+                <p style="margin-top: 10px;">
+                    <span><i class="fa fa-pencil-square-o" aria-hidden="true" style="color:dodgerblue"></i>&nbsp;{{ article.datePublish | date:'Y-m-d G:i:s' }}</span>&nbsp;&nbsp;&nbsp;
+                    <span><i class="fa fa-eye" aria-hidden="true" style="color:dodgerblue"></i>（{{ article.clickCnt }}）</span>&nbsp;&nbsp;<span><i class="fa fa-thumbs-o-up" aria-hidden="true" style="color:dodgerblue"></i>（{{ article.praiseCnt }}）</span>
+                </p>
+                <hr>
+            </div>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+
+{# Paginator #}
+{% block Paginator %}
+    {# paginator for articles of index page #}
+    {% if bIsIndex == True %}
+       {% if page_range|length > 1  %}
+            <div class="center-block" style="text-align:center;margin-bottom: 50px;">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-lg">
+                        {% if bShowGoToFirst == True  %}
+                            <li><a href="?page=1" aria-label="Next"><span aria-hidden="true"><i class="fa fa-fast-backward" aria-hidden="true"></i></span></a></li>
+                        {% endif %}
+
+                        {% for num in page_range %}
+                            {% if num == pageReq  %}
+                                <li class="active"><a href="?page={{ num }}">{{ num }}</a></li>
+                            {% else %}
+                                <li><a href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if bShowGoToLast == True  %}
+                            <li><a href="?page={{ page_articles.paginator.num_pages }}" aria-label="Next"><span aria-hidden="true"><i class="fa fa-fast-forward" aria-hidden="true"></i></span></a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        {% else %}
+            <div class="center-block" style="height: 50px;"></div>
+        {% endif %}
+    {# paginator for articles of category pages #}
+    {% else %}
+       {% if page_range|length > 1  %}
+           <div class="center-block" style="text-align:center;margin-bottom: 50px;">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-lg">
+                        {#  top category  #}
+                        {% if bIsTopCategory == True  %}
+                            {% if bShowGoToFirst == True  %}
+                                <li><a href="?tcid={{ tcidReq }}&page=1" aria-label="Next"><span aria-hidden="true"><i class="fa fa-fast-backward" aria-hidden="true"></i></span></a></li>
+                            {% endif %}
+
+                            {% for num in page_range %}
+                                {% if num == pageReq  %}
+                                    <li class="active"><a href="?tcid={{ tcidReq }}&page={{ num }}">{{ num }}</a></li>
+                                {% else %}
+                                    <li><a href="?tcid={{ tcidReq }}&page={{ num }}">{{ num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if bShowGoToLast == True  %}
+                                <li><a href="?tcid={{ tcidReq }}&page={{ page_articles.paginator.num_pages }}" aria-label="Next"><span aria-hidden="true"><i class="fa fa-fast-forward" aria-hidden="true"></i></span></a></li>
+                            {% endif %}
+
+                        {# sub category #}
+                        {% else %}
+                            {% if bShowGoToFirst == True  %}
+                                <li><a href="?tcid={{ tcidReq }}&scid={{ scidReq }}&page=1" aria-label="Next"><span aria-hidden="true"><i class="fa fa-fast-backward" aria-hidden="true"></i></span></a></li>
+                            {% endif %}
+
+                            {% for num in page_range %}
+                                {% if num == pageReq  %}
+                                    <li class="active"><a href="?tcid={{ tcidReq }}&scid={{ scidReq }}&page={{ num }}">{{ num }}</a></li>
+                                {% else %}
+                                    <li><a href="?tcid={{ tcidReq }}&scid={{ scidReq }}&page={{ num }}">{{ num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if bShowGoToLast == True  %}
+                                <li><a href="?tcid={{ tcidReq }}&scid={{ scidReq }}&page={{ page_articles.paginator.num_pages }}" aria-label="Next"><span aria-hidden="true"><i class="fa fa-fast-forward" aria-hidden="true"></i></span></a></li>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+       {% else %}
+           <div class="center-block" style="height: 50px;"></div>
+       {% endif %}
+    {% endif %}
+{% endblock %}
