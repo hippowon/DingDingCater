@@ -167,10 +167,11 @@ def page_article(request:HttpRequest):
     article_list_recent = CArticle.objects.all().order_by("-datePublish")[:10]
     article_list_clickRank = CArticle.objects.all().order_by("-clickCnt")[:10]
 
-    article_id = request.GET.get('id', None)
-
-    if article_id is not None:
-        article = CArticle.objects.get(id=article_id)
+	if article_id is not None:
+        try:
+            article = CArticle.objects.get(id=article_id)
+        except :
+            return page_index(request)
     else:
         article = CArticle.objects.get(id=0)
 
